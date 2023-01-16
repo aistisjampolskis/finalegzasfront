@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Contacts App</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2 {
+    text-align: left;
+    margin: 20px 0;
+}
+
+#contacts-table {
+    width: 15%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+#contacts-table th, #contacts-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+#contacts-table th {
+    background-color: #f2f2f2;
+}
+
+#contacts-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="text"], input[type="password"], input[type="number"] {
+    width: 15%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 2px solid #ccc;
+}
+
+button {
+    border-radius: 50px; /* Adjust the value as needed */
+    padding: 10px 20px;
+    background-color: blue;
+    font-size: 16px;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+#contacts-table {
+    width: 15%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    margin-right:auto;
+    margin-left:auto;
+}
+
+table {
+    position: absolute;
+    top: 10px;
+    right: 1600px;
+}
+.but {
+    position: absolute;
+    top: 350px;
+    right: 1600px;
+}
+
+    </style>
+    <script>
+        
+        // Get all contacts
+
+        // Add a new contact
+        function addContact() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("role").value;
+
+            const contact = { username: username, password: password, role: role };
+            fetch("https://localhost:7292/api/Contacts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(contact),
+            })
+            .then((response) => {
+                    if (response.ok) {
+                        alert("Contact added successfully!");
+                        getContacts();
+                    } else {
+                        alert("Error adding contact. Please try again later.");
+                    }
+                });
+        }
+
+        // Update a contact
+        function updateContact() {
+            const id = document.getElementById("update-id").value;
+            const username = document.getElementById("update-username").value;
+            const password = document.getElementById("update-password").value;
+            const role = document.getElementById("update-role").value;
+
+
+            const contact = { username: username, password: password, role: role };
+            fetch(`https://localhost:7292/api/Contacts/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(contact),
+            })
+            .then((response) => {
+                    if (response.ok) {
+                        alert("Contact updated successfully!");
+                        getContacts();
+                    } else {
+                        alert("Error updating contact. Please try again later.");
+                    }
+                });
+        }
+
+        // Delete a contact
+        function deleteContact() {
+            const id = document.getElementById("delete-id").value;
+            fetch(`https://localhost:7292/api/Contacts/${id}`, {
+                method: "DELETE",
+            })
+            .then((response) => {
+                    if (response.ok) {
+                        alert("Contact deleted successfully!");
+                        getContacts();
+                    } else {
+                        alert("Error deleting contact. Please try again later.");
+                    }
+                });
+        }
+        function getContacts() {
+    fetch("https://localhost:7292/api/Contacts")
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                alert("Error fetching contacts. Please try again later.");
+            }
+        })
+        .then((data) => {
+            const tableBody = document.getElementById("contacts-table-body");
+            tableBody.innerHTML = "";
+            data.forEach((contact) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${contact.id}</td><td>${contact.username}</td><td>${contact.password}</td><td>${contact.role}</td>`;
+                tableBody.appendChild(row);
+            });
+        });
+}
+
+    </script>
+</head>
+
+<body onload="getContacts()">
+    <h1>Contacts</h1>
+    <ul id="contacts-list"></ul>
+    <h2>Add Contact</h2>
+  
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" />
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" />
+    </div>
+    <div>
+        <label for="role">Role:</label>
+        <input type="text" id="role" />
+    </div>
+    <div>
+        <button onclick="addContact()">Add Contact</button>
+    </div>
+    <h2>Update Contact</h2>
+    <div>
+        <label for="update-id">ID:</label>
+        <input type="text" id="update-id" />
+    </div>
+    <div>
+        <label for="update-username">Username:</label>
+        <input type="text" id="update-username" />
+    </div>
+    <div>
+        <label for="update-password">Password:</label>
+        <input type="password" id="update-password" />
+    </div>
+    <div>
+        <label for="update-role">Role:</label>
+        <input type="text" id="update-role" />
+    </div>
+    <div>
+        <button onclick="updateContact()">Update Contact</button>
+    </div>
+
+    <h2>Delete Contact</h2>
+    <div>
+        <label for="delete-id">ID:</label>
+        <input type="text" id="delete-id" />
+    </div>
+    <div>
+        <button onclick="deleteContact()">Delete Contact</button>
+    </div>
+
+    <table id="contacts-table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Role</th>
+               
+            </tr>
+         
+        </thead>
+        <tbody id="contacts-table-body">
+        </tbody>
+    </table>
+</body>
+
+</html>

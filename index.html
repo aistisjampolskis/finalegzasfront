@@ -70,16 +70,46 @@ button:hover {
 table {
     position: absolute;
     top: 10px;
-    right: 1600px;
+    right: 700px;
 }
 .but {
     position: absolute;
     top: 350px;
     right: 1600px;
 }
+/* Default styles for all screen sizes */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #dddddd;
+}
+
+/* Styles for screens larger than 768px */
+@media only screen and (min-width: 768px) {
+    table {
+        width: 75%;
+    }
+}
+
+/* Styles for screens smaller than 768px */
+@media only screen and (max-width: 767px) {
+    table {
+        width: 90%;
+    }
+}
 
     </style>
     <script>
+        
         
         // Get all contacts
 

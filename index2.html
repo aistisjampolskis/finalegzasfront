@@ -1,0 +1,257 @@
+<style>
+    @media only screen and (min-width: 768px) {
+        table {
+            width: 75%;
+        }
+    }
+
+    /* Styles for screens smaller than 768px */
+    @media only screen and (max-width: 767px) {
+        table {
+            width: 90%;
+        }
+    }
+</style>
+
+<body onload="getContacts()">
+   
+        <h1>Detailed info</h1>
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required />
+        </div>
+        <div>
+            <label for="surname">Surname:</label>
+            <input type="text" id="surname" name="surname" required />
+        </div>
+        <div>
+            <label for="personId">Person ID:</label>
+            <input type="number" id="personId" name="personId" required />
+        </div>
+        <div>
+            <label for="telephone">Telephone:</label>
+            <input type="tel" id="telephone" name="telephone" required />
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+            <label for="livingPlaceId">Living Place ID:</label>
+            <input type="number" id="livingPlaceId" name="livingPlaceId" required />
+        </div>
+        <div>
+            <label for="profileImage">Profile Image:</label>
+            <input type="file" id="profileImage" name="profileImage" accept="image/*" required />
+        </div>
+        <div>
+            <button onclick="addContactForm()">Add Contact</button>
+        </div>
+    
+    
+        <h2>Update Contact</h2>
+        <div>
+            <div>
+                <label for="update-id">ID:</label>
+                <input type="text" id="update-id" />
+            </div>
+            <div>
+                <label for="update-name">Name:</label>
+                <input type="text" id="update-name" name="name" required />
+            </div>
+            <div>
+                <label for="update-surname">Surname:</label>
+                <input type="text" id="update-surname" name="surname" required />
+            </div>
+            <div>
+                <label for="update-personId">Person ID:</label>
+                <input type="number" id="update-personId" name="personId" required />
+            </div>
+            <div>
+                <label for="update-telephone">Telephone:</label>
+                <input type="tel" id="update-telephone" name="telephone" required />
+            </div>
+            <div>
+                <label for="update-email">Email:</label>
+                <input type="email" id="update-email" name="email" required />
+            </div>
+            <div>
+                <label for="update-livingPlaceId">Living Place ID:</label>
+                <input type="number" id="update-livingPlaceId" name="livingPlaceId" required />
+            </div>
+            <div>
+                <label for="update-profileImage">Profile Image:</label>
+                <input type="file" id="update-profileImage" name="profileImage" accept="image/*" required />
+            </div>
+            <div>
+                <button onclick="updateContact()">Update Contact</button>
+            </div>
+        </div>
+    
+    <h2>Delete Contact</h2>
+    <div>
+        <label for="delete-id">ID:</label>
+        <input type="text" id="delete-id" />
+    </div>
+    <div>
+        <button onclick="deleteContact()">Delete Contact</button>
+    </div>
+    <table id="contacts-table">
+        <thead>
+            <h3>Table data</h3>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Person ID</th>
+                <th>Telephone</th>
+                <th>Email</th>
+                <th>Living Place ID</th>
+                <th>Profile Image</th>
+            </tr>
+        </thead>
+        <tbody id="contacts-table-body">
+        </tbody>
+    </table>
+</body>
+<script>
+
+    function addContactForm() {
+        // Get the image file
+        let imageString;
+        let imageFile = document.getElementById("profileImage").files[0];
+        let reader = new FileReader();
+        reader.onload = function () {
+            // Get the image data as a base64 encoded string
+            imageString = reader.result.toString();
+            console.log(imageString)
+
+            // Create the object to be sent to the server
+            let ad = {
+                Name: document.getElementById("name").value,
+                Surname: document.getElementById("surname").value,
+                personId: document.getElementById("personId").value,
+                Telephone: document.getElementById("telephone").value,
+                Email: document.getElementById("email").value,
+                livingPlaceId: document.getElementById("livingPlaceId").value,
+                ProfileImage: imageString
+            };
+        
+            // Send a POST request to the server with the data
+            fetch("https://localhost:7292/apiUserControler", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(ad)
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert("Contact added successfully!");
+                    } else {
+                        alert("Error adding contact. Please try again later.");
+                    }
+                });
+        };
+        reader.readAsDataURL(imageFile);
+    }
+
+    ;
+    function updateContact() {
+        // Get the image file
+        let imageString;
+        let imageFile = document.getElementById("update-profileImage").files[0];
+        let reader = new FileReader();
+        reader.onload = function () {
+            // Get the image data as a base64 encoded string
+            imageString = reader.result.toString();
+
+            // Create the object to be sent to the server
+            let ad = {
+                Id: document.getElementById("update-id").value,
+                Name: document.getElementById("update-name").value,
+                Surname: document.getElementById("update-surname").value,
+                personId: document.getElementById("update-personId").value,
+                Telephone: document.getElementById("update-telephone").value,
+                Email: document.getElementById("update-email").value,
+                livingPlaceId: document.getElementById("update-livingPlaceId").value,
+                ProfileImage: imageString
+            };
+
+            // Send a PUT request to the server with the data
+            fetch("https://localhost:7292/apiUserControler/" + ad.Id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(ad)
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert("Contact updated successfully!");
+                    } else {
+                        alert("Error updating contact. Please try again later.");
+                    }
+                });
+        };
+        reader.readAsDataURL(imageFile);
+    }
+    function deleteContact() {
+        const id = document.getElementById("delete-id").value;
+        fetch(`https://localhost:7292/apiUserControler/${id}`, {
+            method: "DELETE",
+        })
+            .then((response) => {
+                if (response.ok) {
+                    alert("Contact deleted successfully!");
+                    getContacts();
+                } else {
+                    alert("Error deleting contact. Please try again later.");
+                }
+            });
+    }
+    async function getContacts() {
+    const response = await fetch('https://localhost:7292/apiUserControler');
+    const data = await response.json();
+
+    const tableBody = document.getElementById("contacts-table-body");
+    for (const contact of data) {
+        const row = document.createElement("tr");
+
+        const idCell = document.createElement("td");
+        idCell.textContent = contact.id;
+        row.appendChild(idCell);
+
+        const nameCell = document.createElement("td");
+        nameCell.textContent = contact.Name;
+        row.appendChild(nameCell);
+
+        const surnameCell = document.createElement("td");
+        surnameCell.textContent = contact.Surname;
+        row.appendChild(surnameCell);
+        
+        const personIdCell = document.createElement("td");
+        personIdCell.textContent = contact.personId;
+        row.appendChild(personIdCell);
+        
+        const telephoneCell = document.createElement("td");
+        telephoneCell.textContent = contact.Telephone;
+        row.appendChild(telephoneCell);
+        
+        const emailCell = document.createElement("td");
+        emailCell.textContent = contact.Email;
+        row.appendChild(emailCell);
+        
+        const livingPlaceIdCell = document.createElement("td");
+        livingPlaceIdCell.textContent = contact.livingPlaceId;
+        row.appendChild(livingPlaceIdCell);
+
+        const profileImageCell = document.createElement("td");
+        const image = document.createElement("img");
+        image.src = contact.ProfileImage;
+        image.style.width = "50px";
+        profileImageCell.appendChild(image);
+        row.appendChild(profileImageCell);
+
+        tableBody.appendChild(row);
+    }
+}
+
+</script>
+
